@@ -20,11 +20,15 @@ public class Ticket {
     @Column(nullable = false)
     private TicketStatus status = TicketStatus.NEW;
 
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "assigned_agent_id")
+    private User assignedAgent;
 
     public Ticket() {
     }
@@ -76,4 +80,8 @@ public class Ticket {
     public void setUser(User user) {
         this.user = user;
     }
+
+    public User getAssignedAgent() {return assignedAgent;}
+
+    public void setAssignedAgent(User assignedAgent) {this.assignedAgent = assignedAgent;}
 }

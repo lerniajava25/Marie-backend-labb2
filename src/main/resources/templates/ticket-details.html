@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="sv" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ärendedetaljer</title>
+</head>
+<body>
+
+<h1>Ärendedetaljer</h1>
+
+<h2 th:text="${ticket.title}">Ärendets titel</h2>
+
+<p th:text="${ticket.description}">Beskrivning</p>
+
+<p>
+    Skapades:
+    <span th:text="${#temporals.format(ticket.createdAt, 'yyyy-MM-dd HH:mm')}">Datum</span>
+</p>
+
+<p>
+    Status:
+    <span th:text="${ticket.status}">Status</span>
+</p>
+<div th:if="${agentView and (isAdmin or
+             (ticket.assignedAgent != null and
+              ticket.assignedAgent.username == #authentication.name))}">
+
+    <form th:action="@{/agent/tickets/{id}/status(id=${ticket.id})}"
+          method="post">
+
+        <label for="status">Ändra status:</label>
+
+        <select name="status" id="status">
+            <option value="NEW" th:selected="${ticket.status.name() == 'NEW'}">Ny</option>
+            <option value="IN_PROGRESS" th:selected="${ticket.status.name() == 'IN_PROGRESS'}">Pågående</option>
+            <option value="WAITING_FOR_USER" th:selected="${ticket.status.name() == 'WAITING_FOR_USER'}">Väntar på användare</option>
+            <option value="RESOLVED" th:selected="${ticket.status.name() == 'RESOLVED'}">Löst</option>
+            <option value="CLOSED" th:selected="${ticket.status.name() == 'CLOSED'}">Stängt</option>
+        </select>
+
+        <button type="submit">Spara status</button>
+
+    </form>
+</div>
+
+<div th:if="${agentView}">
+    <p>
+        Ansvarig agent:
+        <span th:if="${ticket.assignedAgent != null}"
+              th:text="${ticket.assignedAgent.username}">Agent</span>
+
+        <span th:unless="${ticket.assignedAgent != null}">
+            Ingen agent tilldelad
+        </span>
+    </p>
+
+    <form th:if="${ticket.assignedAgent == null}"
+          th:action="@{/agent/tickets/{id}/assign(id=${ticket.id})}"
+          method="post">
+        <button type="submit">Tilldela till mig</button>
+    </form>
+</div>
+
+<h3>Kommentarer</h3>
+<div th:each="comment : ${comments}">
+    <p th:text="${comment.message}">Kommentar</p>
+    <p>
+        Skriven av:
+        <span th:text="${comment.user.username}">Användare</span>
+    </p>
+    <p>
+        Skapades:
+        <span th:text="${#temporals.format(ticket.createdAt, 'yyyy-MM-dd HH:mm')}">Datum</span>
+    </p>
+    <hr>
+</div>
+
+<h3>Skriv en kommentar</h3>
+
+<form th:if="${agentView}"
+      th:action="@{/agent/tickets/{id}/comments(id=${ticket.id})}"
+      method="post">
+
+    <textarea name="message" required></textarea>
+    <br><br>
+    <button type="submit">Skicka kommentar</button>
+</form>
+
+<form th:unless="${agentView}"
+      th:action="@{/tickets/{id}/comments(id=${ticket.id})}"
+      method="post">
+
+    <textarea name="message" required></textarea>
+    <br><br>
+    <button type="submit">Skicka kommentar</button>
+</form>
+
+<a th:if="${agentView}" th:href="@{/agent/tickets}">
+    Tillbaka till alla ärenden
+</a>
+
+<a th:unless="${agentView}" th:href="@{/tickets}">
+    Tillbaka till mina ärenden
+</a>
+
+</body>
+</html>

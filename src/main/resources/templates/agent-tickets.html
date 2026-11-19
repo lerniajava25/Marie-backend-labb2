@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="sv" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Alla ärenden</title>
+</head>
+<body>
+
+<h1>Alla ärenden</h1>
+
+<div th:each="ticket : ${tickets}">
+    <h2>
+        <a th:href="@{/agent/tickets/{id}(id=${ticket.id})}"
+           th:text="${ticket.title}">Ärendets titel</a>
+    </h2>
+    <p th:text="${ticket.description}">Beskrivning</p>
+    <p th:text="${ticket.status}">Status</p>
+    <p>
+        Skapades:
+        <span th:text="${#temporals.format(ticket.createdAt, 'yyyy-MM-dd HH:mm')}">Datum</span>
+    </p>
+    <hr>
+</div>
+
+</body>
+</html>

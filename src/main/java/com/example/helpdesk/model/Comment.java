@@ -13,7 +13,7 @@ public class Comment {
     @Column(nullable = false, length = 2000)
     private String message;
 
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
